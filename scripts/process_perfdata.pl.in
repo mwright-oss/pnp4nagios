@@ -1705,6 +1705,7 @@ sub GetLock
     my $FH;
     my $madewhen;
     while ($tries > 0) {
+        $tries--;
         if (sysopen($FH,$dlockfile,O_WRONLY|O_CREAT|O_EXCL)) {
             my $t = time();
             print $FH "$t\n";
@@ -1715,11 +1716,16 @@ sub GetLock
         if (open($FH,"<$dlockfile")) {
 	    while (<$FH>) {
 		chomp;
-		next if /^\s*$/;
-		$madewhen = $_ unless defined $madewhen;
+		next unless /^(\d+)$/;
+		$madewhen = $1;
+		last;
             }
 	    close($FH);
-	    next unless defined $madewhen; 
+
+	    # Use the last modified time of the lock file if no time is found
+	    $madewhen ||= (stat($dlockfile))[9];
+
+	    next unless defined $madewhen;
             my $dt = time() - $madewhen;
             if ($dt > $conf{MAXLOCK}) {
                 print_log("DEBUG: old lock file $lockfile deleted",3);
@@ -1727,7 +1733,6 @@ sub GetLock
                 next;
             }
         }
-        $tries--;
         print_log("DEBUG: PID $$ did not get lock on $lockfile, $tries remain",3);
         usleep($wait);
     }
