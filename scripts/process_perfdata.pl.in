@@ -355,7 +355,7 @@ sub process_perfdata_file {
     }
 
     GetLock('file1.lock',10,0.2);
-    
+
     # empty file?
     my $n = (stat($opt_b))[7];
     if (!defined($n) || $n == 0) {
@@ -386,7 +386,7 @@ sub process_perfdata_file {
 	}
 	close($tmpfh);
     }
-    
+
     print_log( "reading $pdfile for bulk update", 2 );
     open( PDFILE, "< $pdfile" );
     my $count = 0;
@@ -412,7 +412,7 @@ sub process_perfdata_file {
     }else {
         print_log( "Could not delete $pdfile:$!", 1 );
     }
-    return $count; 
+    return $count;
 }
 
 #
@@ -1348,7 +1348,7 @@ sub handle_signal {
                 if ( -f $pdfile) {
                     if ( unlink("$pdfile") == 1 ) {
                         print_log( "*** TIMEOUT: $pdfile deleted", 0 );
-                    }                    
+                    }
                     else {
                         print_log( "*** TIMEOUT: Could not delete $pdfile:$!", 0 );
                     }
@@ -1408,7 +1408,7 @@ sub check_internals {
     if (!GetLock('stats',20,0.25)) {
         print_log("ERROR: failed to get stats file lock, bailing",0);
         return;
-    }    
+    }
 
     opendir(STATS, $conf{'STATS_DIR'});
     while ( defined ( my $file = readdir STATS) ){
@@ -1440,7 +1440,7 @@ sub read_internals {
         }
         push(@nfiles,$newfile);
     }
-    ReleaseLock('stats'); 
+    ReleaseLock('stats');
 
     foreach my $newfile (@nfiles) {
         print_log("DEBUG: processing stats file $newfile",3);
@@ -1701,7 +1701,7 @@ sub GetLock
     my $wait = shift;
     $wait = $wait * 1000000 if defined($wait) && $wait < 10;
     $wait = 1000000 unless defined $wait;
-    
+
     my $FH;
     my $madewhen;
     while ($tries > 0) {
@@ -1740,7 +1740,7 @@ sub ReleaseLock
     my $lockfile = shift;
     $lockfile = 'ppd.lock' unless defined $lockfile;
     my $dlockfile = $conf{LOCKDIR}.$lockfile;
-    
+
     my $iss = unlink $dlockfile;
     print_log("DEBUG: PID $$ release lock on $lockfile, OK=$iss",3);
 }
